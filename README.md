@@ -96,9 +96,17 @@ C:/work/my-api 폴더에서 SQL 인젝션만 찾아줘
 
 ### 결과 예시
 
-테스트용 취약 앱(`src/test/resources/fixtures/vulnerable-app`)을 Claude Code(`claude -p`)로 실제 분석한 결과다. Claude가 14턴 동안 도구로 코드를 읽고, SQL 인젝션을 기록하고, 다시 검증해 확정했다.
+테스트용 취약 앱(`src/test/resources/fixtures/vulnerable-app`)을 Claude Code(`claude -p`)에서 이 MCP 서버로 실제 분석한 보고서다(27턴, 약 1분 소요).
 
-→ [docs/examples/vulnerable-app-report.md](docs/examples/vulnerable-app-report.md)
+- Claude가 진입점 → 위험 지점 경로와, 진입점에서 닿지 않는 위험 지점까지 조사해 발견 5건을 기록했다.
+- 그다음 입장을 바꿔 다시 검증했다.
+  - **확정 2**: SQL 인젝션, 명령 인자 주입
+  - **판단 불가 1**: 경로 조작. 막을 수 있는지가 저장소 밖 서버 설정에 달려 있다.
+  - **기각 2**: 아무 곳에서도 호출되지 않는 코드다.
+
+![보고서 예시](docs/images/report-summary.png)
+
+전체 보고서: [Markdown](docs/examples/vulnerable-app-report.md) · [이미지](docs/images/report-example.png)
 
 ## 도구
 
