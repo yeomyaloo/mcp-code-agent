@@ -1,0 +1,48 @@
+plugins {
+	id 'java'
+	id 'application'
+}
+
+group = 'com.codeagent'
+version = '0.1.0'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'io.modelcontextprotocol.sdk:mcp:2.0.1'
+	implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.26.4'
+	implementation 'org.eclipse.jgit:org.eclipse.jgit:7.8.0.202609011348-r'
+	implementation 'org.slf4j:slf4j-api:2.0.17'
+	// MCP stdio 는 stdout 으로 통신하므로 로그는 stderr 로만 (slf4j-simple 기본값)
+	runtimeOnly 'org.slf4j:slf4j-simple:2.0.17'
+
+	testImplementation platform('org.junit:junit-bom:5.13.4')
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	testImplementation 'org.assertj:assertj-core:3.27.6'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+	mainClass = 'com.codeagent.mcp.McpCodeAgent'
+	applicationName = 'mcp-code-agent'
+	applicationDefaultJvmArgs = ['-Dfile.encoding=UTF-8', '-Dstdout.encoding=UTF-8', '-Dstderr.encoding=UTF-8']
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+	// 채팅 클라이언트는 PATH 의 java 로 서버를 띄우므로 Java 17 에서도 돌게 한다
+	options.release = 17
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+	systemProperty 'file.encoding', 'UTF-8'
+}

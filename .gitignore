@@ -1,0 +1,16 @@
+.gradle/
+build/
+out/
+bin/
+!gradle/wrapper/gradle-wrapper.jar
+
+### IDE / OS ###
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+### Claude Code 개인 설정 ###
+.claude/settings.local.json
