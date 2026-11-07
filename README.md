@@ -121,7 +121,7 @@ Full report: [Markdown](docs/examples/vulnerable-app-report.md) · [image](docs/
 | `list_repositories` | Loaded repositories | ✅ |
 | `list_sink_paths` | Entry point → sink call paths (shortest per pair, shortest first) | ✅ |
 | `list_entry_points` | Spring MVC HTTP entry points | ✅ |
-| `list_sinks` | Sinks: SQL, COMMAND, PATH, DESERIALIZATION, SSRF, CODE_INJECTION, EXPRESSION_INJECTION, JNDI, OPEN_REDIRECT | ✅ |
+| `list_sinks` | Sinks: SQL, COMMAND, PATH, DESERIALIZATION, SSRF, CODE_INJECTION, EXPRESSION_INJECTION, JNDI, OPEN_REDIRECT, and IDOR (Spring Data `findById` / `deleteById`-style access by id, a missing-owner-check candidate; owner-scoped queries like `findByIdAndUser` are excluded) | ✅ |
 | `find_code_nodes` | Find classes, methods, entry points and sinks by name | ✅ |
 | `get_callers` / `get_callees` | Who calls this / what this calls (interface → implementation included) | ✅ |
 | `read_file` | Read a file with line numbers (400 lines per call) | ✅ |
@@ -311,7 +311,7 @@ C:/work/my-api 폴더에서 SQL 인젝션만 찾아줘
 | `list_repositories` | 불러온 저장소 목록 | ✅ |
 | `list_sink_paths` | 진입점 → 위험 지점 호출 경로 (쌍마다 가장 짧은 경로, 짧은 순) | ✅ |
 | `list_entry_points` | Spring MVC HTTP 진입점 | ✅ |
-| `list_sinks` | 위험 지점 (SQL, COMMAND, PATH, DESERIALIZATION, SSRF, CODE_INJECTION, EXPRESSION_INJECTION, JNDI, OPEN_REDIRECT) | ✅ |
+| `list_sinks` | 위험 지점 (SQL, COMMAND, PATH, DESERIALIZATION, SSRF, CODE_INJECTION, EXPRESSION_INJECTION, JNDI, OPEN_REDIRECT, IDOR: Spring Data 저장소의 `findById`·`deleteById` 등 id 접근, 소유자 확인 누락 후보. `findByIdAndUser`처럼 주인 조건이 붙은 쿼리는 제외) | ✅ |
 | `find_code_nodes` | 이름으로 클래스·메서드·진입점·위험 지점 찾기 | ✅ |
 | `get_callers` / `get_callees` | 호출하는 쪽 / 호출되는 쪽 (인터페이스 → 구현 포함) | ✅ |
 | `read_file` | 줄 번호를 붙여 파일 읽기 (한 번에 400줄) | ✅ |

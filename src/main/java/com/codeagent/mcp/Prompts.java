@@ -25,7 +25,7 @@ final class Prompts {
 
                 ## 1. 준비
                 %s
-                이어서 list_sink_paths 로 진입점 → 위험 지점 경로를 보고, 위험도가 높은 분류(SQL, COMMAND, DESERIALIZATION, CODE_INJECTION 등)부터 최대 %s개를 고릅니다.
+                이어서 list_sink_paths 로 진입점 → 위험 지점 경로를 보고, 위험도가 높은 분류(SQL, COMMAND, DESERIALIZATION, CODE_INJECTION 등)부터, 그다음 IDOR(소유자 확인 누락 후보)·PATH 순으로 최대 %s개를 고릅니다.
                 고른 경로를 사용자에게 짧게 보여준 뒤 시작합니다.
 
                 ## 2. 조사 (Worker 역할)
@@ -35,6 +35,8 @@ final class Prompts {
                 - 공격을 막는 장치를 반드시 찾습니다: 입력 검증(@Valid, @Pattern), 이스케이프, 파라미터 바인딩(PreparedStatement 의 ?, JPA 파라미터),
                   허용 목록, 경로 정규화와 기준 경로 확인, 권한 검사(SecurityFilterChain, @PreAuthorize), 필터·인터셉터.
                 - 입력이 상수나 서버 내부 값뿐이면 공격 불가능입니다.
+                - IDOR(CWE-639) 위험 지점(저장소의 findById·deleteById 등)이면, 경로로 받은 id 의 데이터가 요청한 사용자의 것인지 비교하는 코드
+                  (세션·토큰 사용자와 소유자 비교, 주인 조건 쿼리, @PreAuthorize)가 있는지 봅니다. 원래 공개 데이터면 취약하지 않습니다.
                 - 외부 입력이 막힘 없이 위험 지점에 닿는다는 것을 코드로 확인했을 때만 record_finding 으로 기록합니다.
                   근거 코드 위치(파일:줄)와 구체적인 공격 요청 예시를 넣습니다.
                 Claude Code 처럼 서브에이전트를 쓸 수 있는 환경이면, 경로마다 서브에이전트에게 맡겨 나란히 조사해도 됩니다.

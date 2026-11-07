@@ -65,6 +65,21 @@ class CodeAgentToolsTest {
     }
 
     @Test
+    void 저장소의_id_접근을_IDOR_후보로_잡고_주인_조건_쿼리는_제외한다() {
+        Path idorApp = Path.of("src/test/resources/fixtures/idor-app").toAbsolutePath();
+        assertThat(call("load_repository", Map.of("path", idorApp.toString()))).contains("위험 지점 3", "경로(쌍) 3개");
+
+        assertThat(call("list_sinks", Map.of("repo", "idor-app", "category", "idor")))
+                .contains("[IDOR CWE-639] com.example.idor.post.PostRepository.findById",
+                        "[IDOR CWE-639] com.example.idor.post.PostRepository.deleteById",
+                        "[IDOR CWE-639] com.example.idor.comment.CommentRepository.deleteById")
+                .doesNotContain("findByIdAndWriterId");
+        assertThat(call("list_sink_paths", Map.of("repo", "idor-app")))
+                .contains("GET /api/posts/{id}  →  [IDOR CWE-639] com.example.idor.post.PostRepository.findById")
+                .doesNotContain("/api/posts/mine/{id}");
+    }
+
+    @Test
     void 파일을_줄_번호와_함께_읽고_저장소_밖은_막는다() {
         String file = call("read_file", Map.of("repo", "vulnerable-app",
                 "path", "src/main/java/com/example/vuln/service/UserServiceImpl.java", "start_line", 24, "end_line", 25));

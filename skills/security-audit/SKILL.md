@@ -14,7 +14,7 @@ The code graph is static analysis and can be wrong. **Every judgment must come f
 1. `load_repository` with `path` (absolute folder) or `git_url` (public https repo). Note the returned repo id.
    If it reports earlier findings and the user wants a fresh audit, call `clear_findings`.
 2. Look at the attack surface:
-   - `list_sink_paths` — entry point → dangerous API paths (SQL, COMMAND, PATH, DESERIALIZATION, SSRF, CODE/EXPRESSION_INJECTION, JNDI, OPEN_REDIRECT).
+   - `list_sink_paths` — entry point → dangerous API paths (SQL, COMMAND, PATH, DESERIALIZATION, SSRF, CODE/EXPRESSION_INJECTION, JNDI, OPEN_REDIRECT, and IDOR: Spring Data `findById`/`deleteById`-style access by id, a missing-owner-check candidate). For IDOR, check whether the code compares the requesting user with the data owner (session/token user vs owner, owner-scoped queries like `findByIdAndUser`, `@PreAuthorize`); public data is not a vulnerability.
    - `list_entry_points` — every HTTP endpoint, including ones that reach no sink.
    - `list_sinks` — dangerous calls, including ones no entry point reaches (check them with `get_callers`).
 3. Build a short plan (aim for 5–12 items, highest risk first) and show it to the user before starting:

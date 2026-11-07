@@ -163,7 +163,8 @@ public class CodeAgentTools {
     ToolDef listSinks() {
         return new ToolDef("list_sinks", "위험 지점 목록",
                 "위험한 API 를 호출하는 위치 목록. 분류: SQL, COMMAND, PATH, DESERIALIZATION, SSRF, CODE_INJECTION, "
-                        + "EXPRESSION_INJECTION, JNDI, OPEN_REDIRECT. 진입점에서 닿지 않는 위험 지점도 포함한다.",
+                        + "EXPRESSION_INJECTION, JNDI, OPEN_REDIRECT, IDOR(Spring Data 저장소의 findById·deleteById 등 id 접근, 소유자 확인 누락 후보). "
+                        + "진입점에서 닿지 않는 위험 지점도 포함한다.",
                 schema(props("repo", REPO, "category", string("분류로 거르기 (예: SQL)")), List.of("repo")),
                 true, false, args -> {
             String category = args.optionalString("category").map(c -> c.toUpperCase(Locale.ROOT)).orElse(null);
