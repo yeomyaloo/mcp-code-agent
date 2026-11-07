@@ -8,7 +8,7 @@
 
 Connect it to Claude Code (or Claude Desktop) and say *"audit this repository for security issues"*. Claude uses this server's tools to follow **entry point → dangerous API (sink)** paths through Java/Spring code, records vulnerabilities, re-verifies each one from the opposite side, and writes a report.
 
-- **No API key.** It runs on the Claude subscription you are logged in with (Pro, Max, Team, …).
+- **Runs on your Claude Code login.** A Claude subscription (Pro, Max, Team, …) or an API key, whichever Claude Code uses. There is no separate API key to configure.
 - **No database, no server to host.** Only Java is required. The code graph lives in memory and findings are saved as JSON files.
 - A **standalone version** of [be-code-agent](https://github.com/yeomyaloo/be-code-agent) (Spring Boot backend + PostgreSQL + Anthropic API) that shares the same code graph engine.
 
@@ -33,7 +33,7 @@ Connect it to Claude Code (or Claude Desktop) and say *"audit this repository fo
 
 | | be-code-agent | mcp-code-agent |
 |---|---|---|
-| Brain (LLM) | The backend calls the Anthropic API (API key) | Claude in your chat app (subscription login) |
+| Brain (LLM) | The backend calls the Anthropic API (API key) | Claude in your chat app (subscription or API key login) |
 | Agent loop | Backend `AgentLoop` | The chat app |
 | Planner / Worker / Verifier | Separate agents run by the backend | Claude takes each role in turn (Claude Code can split them into subagents) |
 | Storage | PostgreSQL | Memory + JSON files |
@@ -198,7 +198,7 @@ src/main/java/com/codeagent/mcp/
 
 Claude Code나 Claude Desktop에 연결하고 "이 저장소 보안 분석해줘"라고 하면 된다. Claude가 이 서버의 도구로 Java/Spring 코드의 **진입점 → 위험 지점** 경로를 따라가며 취약점을 찾고, 입장을 바꿔 다시 검증하고, 보고서를 만든다.
 
-- **API 키가 필요 없다.** 채팅 앱에 로그인한 구독(Pro, Max, Team 등)으로 돈다.
+- **Claude Code에 로그인한 그대로 돈다.** Claude 구독(Pro, Max, Team 등)이든 API 키든 Claude Code가 쓰는 방식 그대로이고, 따로 설정할 API 키가 없다.
 - **DB도 서버도 필요 없다.** Java만 있으면 된다. 코드 그래프는 메모리에, 발견은 JSON 파일에 둔다.
 - [be-code-agent](https://github.com/yeomyaloo/be-code-agent)(Spring Boot 백엔드 + PostgreSQL + Anthropic API)와 같은 코드 그래프 엔진을 쓰는 **독립 버전**이다.
 
@@ -223,7 +223,7 @@ Claude Code나 Claude Desktop에 연결하고 "이 저장소 보안 분석해줘
 
 | | be-code-agent | mcp-code-agent |
 |---|---|---|
-| 두뇌(LLM) | 백엔드가 Anthropic API 호출 (API 키 필요) | 채팅 앱의 Claude (구독 로그인) |
+| 두뇌(LLM) | 백엔드가 Anthropic API 호출 (API 키 필요) | 채팅 앱의 Claude (구독 또는 API 키로 로그인) |
 | 반복 실행 | 백엔드 `AgentLoop` | 채팅 앱이 알아서 반복 |
 | Planner / Worker / Verifier | 백엔드가 별도 에이전트로 실행 | 채팅의 Claude가 차례로 맡음 (Claude Code는 서브에이전트로 나눌 수 있음) |
 | 저장 | PostgreSQL | 메모리 + JSON 파일 |
