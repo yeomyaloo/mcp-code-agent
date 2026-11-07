@@ -1,0 +1,15 @@
+{
+  "name": "yeomyaloo-code-agent",
+  "owner": {
+    "name": "hwiju yeom",
+    "url": "https://github.com/yeomyaloo"
+  },
+  "description": "AI code security audit agent for Java/Spring (MCP server + skill)",
+  "plugins": [
+    {
+      "name": "code-agent",
+      "source": "./",
+      "description": "Audit Java/Spring source code for security vulnerabilities in chat (code graph, findings, verification, SARIF reports). Requires Java 17+."
+    }
+  ]
+}
