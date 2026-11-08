@@ -64,7 +64,7 @@ class McpProtocolTest {
 
             var prompt = client.getPrompt(new GetPromptRequest("security_audit", Map.of("target", "https://github.com/o/r.git")));
             assertThat(((TextContent) prompt.messages().get(0).content()).text())
-                    .contains("load_repository 를 git_url=\"https://github.com/o/r.git\"", "submit_verdict");
+                    .contains("load_repository 를 git_url=\"https://github.com/o/r.git\"", "승인", "submit_verdict");
         }
     }
 

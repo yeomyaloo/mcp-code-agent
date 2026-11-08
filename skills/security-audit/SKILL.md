@@ -17,10 +17,14 @@ The code graph is static analysis and can be wrong. **Every judgment must come f
    - `list_sink_paths` — entry point → dangerous API paths (SQL, COMMAND, PATH, DESERIALIZATION, SSRF, CODE/EXPRESSION_INJECTION, JNDI, OPEN_REDIRECT, and IDOR: Spring Data `findById`/`deleteById`-style access by id, a missing-owner-check candidate). For IDOR, check whether the code compares the requesting user with the data owner (session/token user vs owner, owner-scoped queries like `findByIdAndUser`, `@PreAuthorize`); public data is not a vulnerability.
    - `list_entry_points` — every HTTP endpoint, including ones that reach no sink.
    - `list_sinks` — dangerous calls, including ones no entry point reaches (check them with `get_callers`).
-3. Build a short plan (aim for 5–12 items, highest risk first) and show it to the user before starting:
+3. Build a short plan (aim for 5–12 items, highest risk first):
    - Each high-risk sink path.
    - Problems paths cannot show: endpoints that read/update/delete by an id path variable without checking the caller owns the data (CWE-639), privileged endpoints without role checks (CWE-862), security config (`SecurityFilterChain`, `permitAll`, CSRF, CORS), hardcoded secrets in `src/main/resources` (CWE-798; never print secret values — mask them).
    Group endpoints that share a pattern into one item.
+4. **Get the user's approval before investigating.** Show the plan as a numbered list (for each item: the endpoint or file, the category/CWE, and one line on what you will check), then stop and ask the user to approve it. They may drop items, add items, or reject the plan. Do not call `read_file` or start investigating until they answer; this is the point where they decide what the audit spends time and tokens on.
+   - Apply their changes and investigate only the approved items. If they reject the plan, stop and don't record anything.
+   - Skip the wait only when the user already said to go ahead without confirmation (e.g. "just run it", "no need to ask"), or when you are running unattended with no one to answer. Then say which items you chose and continue.
+   - If investigation turns up follow-up work outside the approved plan (e.g. another caller of the same sink), list it and ask again before investigating it.
 
 ## 2. Investigate (worker role)
 

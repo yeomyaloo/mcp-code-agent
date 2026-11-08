@@ -17,7 +17,7 @@ Connect it to Claude Code (or Claude Desktop) and say *"audit this repository fo
 ```
  ┌──────────── Chat app (Claude Code / Claude Desktop) ────────────┐
  │  Claude = brain                                                  │
- │  · decides which paths to investigate and which files to read    │
+ │  · plans which paths to investigate, asks you to approve the plan│
  │  · judges whether code is exploitable (worker role)              │
  │  · switches sides and re-verifies each finding (verifier role)   │
  └────────────────┬──────────────────────────────────▲──────────────┘
@@ -36,6 +36,7 @@ Connect it to Claude Code (or Claude Desktop) and say *"audit this repository fo
 | Brain (LLM) | The backend calls the Anthropic API (API key) | Claude in your chat app (subscription or API key login) |
 | Agent loop | Backend `AgentLoop` | The chat app |
 | Planner / Worker / Verifier | Separate agents run by the backend | Claude takes each role in turn (Claude Code can split them into subagents) |
+| Human approval | Optional `requireApproval`: the job waits at `WAITING_APPROVAL` until you approve (or drop tasks / reject) in the web UI | Claude shows the numbered plan in chat and waits for your OK; reply with items to drop or add, or reject it |
 | Storage | PostgreSQL | Memory + JSON files |
 | UI | Web ([fe-code-agent](https://github.com/yeomyaloo/fe-code-agent)) | The chat window |
 
@@ -102,6 +103,8 @@ Audit https://github.com/spring-projects/spring-petclinic for security vulnerabi
 ```
 Find only SQL injection in C:/work/my-api
 ```
+
+Before reading any code, Claude shows the plan (a numbered list of paths and endpoints to check) and waits for your approval. Reply "ok", or "drop 3 and 5", "also check the admin API", or "stop". If you don't want to be asked, say so in the request ("…, no need to confirm the plan").
 
 With the plugin, the `security-audit` skill kicks in for requests like these. You can also call it directly with `/code-agent:security-audit`. The MCP server also exposes two prompts, `security_audit` (target, max_paths) and `verify_findings` (repo).
 
@@ -213,7 +216,7 @@ Claude Code나 Claude Desktop에 연결하고 "이 저장소 보안 분석해줘
 ```
  ┌─────────── 채팅 앱 (Claude Code / Claude Desktop) ───────────┐
  │  Claude = 두뇌                                                │
- │  · 어떤 경로를 조사할지, 어떤 파일을 읽을지 정한다              │
+ │  · 조사할 경로를 정하고, 계획을 보여준 뒤 사람 승인을 받는다   │
  │  · 취약한지 판단한다 (Worker 역할)                             │
  │  · 입장을 바꿔 다시 검증한다 (Verifier 역할)                   │
  └───────────────┬───────────────────────────────▲──────────────┘
@@ -232,6 +235,7 @@ Claude Code나 Claude Desktop에 연결하고 "이 저장소 보안 분석해줘
 | 두뇌(LLM) | 백엔드가 Anthropic API 호출 (API 키 필요) | 채팅 앱의 Claude (구독 또는 API 키로 로그인) |
 | 반복 실행 | 백엔드 `AgentLoop` | 채팅 앱이 알아서 반복 |
 | Planner / Worker / Verifier | 백엔드가 별도 에이전트로 실행 | 채팅의 Claude가 차례로 맡음 (Claude Code는 서브에이전트로 나눌 수 있음) |
+| 사람 승인 | 선택(`requireApproval`). 웹 화면에서 승인(할 일 빼기)·거절할 때까지 `WAITING_APPROVAL`로 멈춤 | Claude가 채팅에 번호 붙인 계획을 보여주고 답을 기다림. 뺄 항목·더할 항목을 말하거나 거절하면 됨 |
 | 저장 | PostgreSQL | 메모리 + JSON 파일 |
 | 화면 | 웹 ([fe-code-agent](https://github.com/yeomyaloo/fe-code-agent)) | 채팅창 |
 
@@ -298,6 +302,8 @@ https://github.com/spring-projects/spring-petclinic 저장소 보안 분석해�
 ```
 C:/work/my-api 폴더에서 SQL 인젝션만 찾아줘
 ```
+
+코드를 읽기 전에 Claude가 계획(조사할 경로·엔드포인트 번호 목록)을 보여주고 승인을 기다린다. "ㅇㅋ", "3번이랑 5번은 빼줘", "관리자 API도 봐줘", "그만" 처럼 답하면 된다. 묻지 않고 바로 하길 원하면 요청할 때 말한다("…, 계획 확인 없이 바로 해줘").
 
 플러그인을 쓰면 이런 요청에 `security-audit` 스킬이 알아서 붙는다. 직접 부르려면 `/code-agent:security-audit`. MCP 서버에도 프롬프트 두 개가 있다: `security_audit`(target, max_paths), `verify_findings`(repo).
 

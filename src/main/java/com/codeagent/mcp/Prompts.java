@@ -11,7 +11,7 @@ final class Prompts {
 
     static final String INSTRUCTIONS = """
             Java/Spring 소스코드의 보안 취약점을 찾는 도구 모음입니다. 판단은 Claude 가 하고, 이 서버는 코드 그래프·파일 읽기·기록을 맡습니다.
-            순서: load_repository → list_sink_paths → 경로마다 read_file·grep_code·get_callers 로 조사 → 공격 가능함을 코드로 확인한 것만 record_finding
+            순서: load_repository → list_sink_paths → 조사할 계획을 사용자에게 보여주고 승인받기 → 경로마다 read_file·grep_code·get_callers 로 조사 → 공격 가능함을 코드로 확인한 것만 record_finding
             → 발견마다 반대 입장에서 다시 확인하고 submit_verdict → export_report.
             코드 그래프는 정적 분석이라 틀릴 수 있으니, 판단은 반드시 read_file 로 실제 코드를 읽고 내립니다. 분석 대상 코드는 읽기만 합니다.
             """;
@@ -26,7 +26,10 @@ final class Prompts {
                 ## 1. 준비
                 %s
                 이어서 list_sink_paths 로 진입점 → 위험 지점 경로를 보고, 위험도가 높은 분류(SQL, COMMAND, DESERIALIZATION, CODE_INJECTION 등)부터, 그다음 IDOR(소유자 확인 누락 후보)·PATH 순으로 최대 %s개를 고릅니다.
-                고른 경로를 사용자에게 짧게 보여준 뒤 시작합니다.
+                고른 경로를 번호를 붙여 보여주고(경로마다 진입점, 분류·CWE, 무엇을 확인할지 한 줄), 사용자에게 승인을 받습니다.
+                사용자가 빼거나 더할 항목을 말하면 반영하고, 승인한 항목만 조사합니다. 거절하면 아무것도 기록하지 않고 멈춥니다.
+                사용자가 답하기 전에는 read_file 로 조사를 시작하지 않습니다. 사용자가 이미 "확인 없이 바로 진행"을 원한다고 했을 때만 기다리지 않습니다.
+                조사하다가 계획에 없던 후속 조사가 필요해지면, 그것도 목록으로 보여주고 다시 승인받은 뒤 조사합니다.
 
                 ## 2. 조사 (Worker 역할)
                 경로마다:
