@@ -62,7 +62,13 @@ Start a new session (or run `/reload-plugins`). The plugin brings:
 - the **`code-agent` MCP server** with 15 tools (prebuilt in `server/lib`, no build step), and
 - the **`security-audit` skill**, which guides the audit: plan → investigate → verify → report.
 
+**You do not start any server yourself.** Claude Code launches the MCP server (a small Java process) in the background when a session starts and stops it when the session ends.
+
+To check the connection, run `/mcp` inside Claude Code: `plugin:code-agent:code-agent` should show as connected. If it shows as failed, Claude Code usually could not find `java`: install Java 17 or later, make sure `java -version` works in a new terminal, then restart Claude Code.
+
 Update later with `claude plugin update code-agent@yeomyaloo-code-agent`.
+
+> Looking for the web UI instead? That is a different setup with a real server (PostgreSQL + backend + web UI) started by `docker compose up`, and it needs an Anthropic API key. See [be-code-agent](https://github.com/yeomyaloo/be-code-agent#quick-start-with-docker-recommended).
 
 ### Claude Desktop (manual)
 
@@ -252,7 +258,13 @@ Claude Code 대화 안에서는:
 - **`code-agent` MCP 서버**와 도구 15개. `server/lib`에 미리 빌드돼 있어서 빌드할 필요가 없다.
 - **`security-audit` 스킬**: 계획 → 조사 → 검증 → 보고 순서로 분석을 이끈다.
 
+**서버를 직접 띄울 필요가 없다.** 대화를 시작하면 Claude Code가 MCP 서버(작은 Java 프로그램)를 백그라운드에서 알아서 실행하고, 대화가 끝나면 같이 끈다.
+
+연결을 확인하려면 Claude Code 안에서 `/mcp`를 입력한다. `plugin:code-agent:code-agent`가 연결됨으로 보이면 정상이다. 실패로 나오면 대개 `java`를 못 찾은 것이다. Java 17 이상을 설치하고, 새 터미널에서 `java -version`이 되는지 확인한 뒤 Claude Code를 다시 켠다.
+
 나중에 업데이트하려면 `claude plugin update code-agent@yeomyaloo-code-agent`.
+
+> 웹 화면으로 쓰고 싶다면 설치 방식이 다르다. 진짜 서버(PostgreSQL + 백엔드 + 웹 화면)를 `docker compose up`으로 띄우고, Anthropic API 키가 필요하다. [be-code-agent](https://github.com/yeomyaloo/be-code-agent#docker로-한-번에-실행-추천) 참고.
 
 ### Claude Desktop (직접 설정)
 
