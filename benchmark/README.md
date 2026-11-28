@@ -173,6 +173,25 @@ No guidance change. cotcha-trail 0.25.1 fixes a slow path in the Node analyzer (
 |---|---|---|---|---|
 | 6 | 0.25.7 | 82% (82–82%) | 100% | ~10–11 |
 
+### Seventh round (plugin 0.26.0, independent verification)
+
+Plugin 0.26.0 asks for verifier subagents that did not investigate, records `verifier` on each verdict, and rejects reasoning without a re-read `file:line` or that only repeats the finding. The run instructions changed in one step: "verify as SKILL.md section 3 describes" instead of "re-verify every finding yourself", and any subagent gets the same blind rules.
+
+| | Run 1 | Run 2 | Run 3 |
+|---|---|---|---|
+| Findings recorded | 88 | 70 | 91 |
+| Confirmed / rejected / uncertain | 88 / 0 / 0 | 69 / 0 / 1 | 89 / 1 / 1 |
+| Verifier subagents (all verdicts independent) | 6 | 5 | 7 |
+| Code items found (18) | 18 | 18 | 17 |
+| Recall (22 items) | 82% | 82% | 77% |
+| Wall time | ~3 h 10 min | ~3 h 10 min | ~3 h 17 min |
+
+- Every run also split the investigation across 4–5 subagents and used separate verifier subagents; all 249 verdicts are `independent`, each with its own reasoning (240–500 characters on average, no repeated text).
+- The verifiers lowered many severities (14 in run 2) and marked library-dependent findings uncertain (finale-rest PATCH, the transitive `jws` version), but rejected almost nothing (2 of 249).
+- Run 3 folded the stale redirect allow-list entries into the `includes()` finding instead of recording them separately, so that item counts as missed.
+- Cost: about 18 times the wall time of round 6 (~10–11 min); the token count reported for each run covers only its top-level agent, not the subagents. Independent verification is worth it when the findings must be trusted, but it is not free.
+- Consistency 95% (21 of 22 items), mean Jaccard 0.96.
+
 ---
 
 # 벤치마크
@@ -348,3 +367,22 @@ node-shop 과 같은 지시로 블라인드 3번을 돌렸다(플러그인 0.22.
 | 회차 | 플러그인 | 재현율 (평균, 최저~최고) | 일관성 | 실행당 시간 |
 |---|---|---|---|---|
 | 6 | 0.25.7 | 82% (82~82%) | 100% | 약 10~11분 |
+
+### 7회차 (플러그인 0.26.0, 독립 검증)
+
+플러그인 0.26.0 은 조사하지 않은 검증 서브에이전트를 쓰게 하고, 판정마다 `verifier` 를 남기고, 다시 읽은 `파일:줄`이 없거나 발견을 되풀이한 근거는 받지 않는다. 실행 지시는 한 단계만 바꿨다: "직접 다시 검증" 대신 "SKILL.md 3절대로 검증", 그리고 서브에이전트에도 같은 블라인드 규칙을 넘긴다.
+
+| | 1번 | 2번 | 3번 |
+|---|---|---|---|
+| 기록한 발견 | 88 | 70 | 91 |
+| 확정 / 기각 / 판단 불가 | 88 / 0 / 0 | 69 / 0 / 1 | 89 / 1 / 1 |
+| 검증 서브에이전트 (판정 모두 독립) | 6 | 5 | 7 |
+| 코드 항목 찾음 (18개) | 18 | 18 | 17 |
+| 재현율 (22개) | 82% | 82% | 77% |
+| 걸린 시간 | 약 3시간 10분 | 약 3시간 10분 | 약 3시간 17분 |
+
+- 세 실행 모두 조사도 서브에이전트 4~5개로 나눴고, 검증은 따로 띄운 검증 서브에이전트가 했다. 판정 249개가 모두 `independent` 이고 근거도 모두 달랐다(평균 240~500자, 같은 문장 없음).
+- 검증 쪽은 심각도를 많이 낮추고(2번은 14개) 라이브러리에 달린 발견은 판단 불가로 두었지만(finale-rest PATCH, 간접 의존성 `jws` 버전), 기각은 거의 없었다(249개 중 2개).
+- 3번은 리다이렉트 허용 목록의 옛 항목을 `includes()` 발견에 합쳐 적어서 그 항목은 놓친 것으로 센다.
+- 비용: 6회차(약 10~11분)의 약 18배 시간. 실행마다 보고된 토큰은 맨 위 에이전트 것만이고 서브에이전트 몫은 빠져 있다. 발견을 믿고 써야 할 때는 독립 검증이 값어치가 있지만 공짜는 아니다.
+- 일관성 95%(22개 중 21개), 평균 자카드 0.96.
